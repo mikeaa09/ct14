@@ -1,0 +1,38 @@
+result=list()
+mydict=dict()
+import re
+
+def remove_tag(content):
+   cleanr =re.compile('<.*?>')
+   cleantext = re.sub(cleanr, '', content)
+   return cleantext
+
+
+import requests
+url="https://www.vox.com/2018/9/25/17901082/trump-un-2018-speech-full-text"
+r=requests.get(url)
+r.encoding= "utf8"
+data= str(r.text)
+begin=data.find("One year ago")
+end=data.rfind("Thank you. (Applause.)")
+a=(data[begin:end+22])
+b=remove_tag(a)
+print(type(b))
+c=b.replace(","," ")
+d=c.replace("."," ")
+e=d.replace("(", " ")
+f=e.replace(")", " ")
+g=f.replace("-–", " ")
+f=g.split()
+for w in f:
+    if w in mydict:
+        mydict[w] += 1
+    else:
+         mydict[w] = 1
+
+for key, val in mydict.items():
+    result.append((val, key))
+result.sort(reverse=True)
+for key, val in result[:20]:
+    print(key, val)
+      
