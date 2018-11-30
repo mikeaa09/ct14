@@ -1,0 +1,20 @@
+import requests
+from bs4 import BeautifulSoup
+
+
+
+basic_url ="http://www.nlotto.co.kr/gameResult.do?method=byWin&drwNo=" 
+for i in range(1, 834):
+    resp = requests.get(basic_url + str(i))
+          
+    soup = BeautifulSoup(resp.text, "lxml")
+    line = str(soup.find("meta", {"id" : "desc", "name" : "description"})['content'])
+    print("당첨회차: " + str(i))
+    begin = line.find("당첨번호")
+    begin = line.find(" ", begin) + 1
+    end = line.find(".", begin)
+    numbers = line[begin:end]
+    print("당첨번호: " + numbers)
+
+
+
