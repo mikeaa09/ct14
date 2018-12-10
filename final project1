@@ -1,0 +1,70 @@
+import random
+import requests
+from bs4 import BeautifulSoup
+
+
+mydict={}
+a=[]
+result=[]
+total0=[];total1=[];total2=[];total3=[];total4=[];total5=[]
+basic_url ="https://www.dhlottery.co.kr/gameResult.do?method=byWin&drwNo=" 
+for i in range(1, 837):
+    resp = requests.get(basic_url + str(i))
+          
+    soup = BeautifulSoup(resp.text, "lxml")
+    line = str(soup.find("meta", {"id" : "desc", "name" : "description"})['content'])
+
+    begin = line.find("당첨번호")
+    begin = line.find(" ", begin) + 1
+    end = line.find(".", begin)
+    numbers = line[begin:end]
+    number=numbers.replace("+",",")
+    b=number.split(",")
+    b[0]=int(b[0]);b[1]=int(b[1]);b[2]=int(b[2]);b[3]=int(b[3]);b[4]=int(b[4]);b[5]=int(b[5]);b[6]=int(b[6])
+    a.append(b)
+for item in a:
+    result.extend(item)
+for w in result:
+    if w in mydict: mydict[w]+= 1
+    else: mydict[w] = 1
+mydict2=list(sorted(mydict, key=mydict.__getitem__, reverse=True))
+mydict3=mydict2[0:7]
+b=input("몇번이나 로또 게임을 할 것인가 적으시오:")
+b=int(b)
+
+def lotto_simulation(lottonumber):
+    count = 0
+    for p in mydict3:
+        if p in lottonumber :
+            count+=1
+    if count<3:
+        total0.append(count)
+    if count==3:
+        total1.append(count)
+    if count==4:
+        total2.append(count)
+    if count==5:
+        total3.append(count)
+    if count==5 and bonus in mydict3:
+        total4.append(count) 
+    if count==6:
+        total5.append(count)
+   
+
+for i in range(b):
+    lotto=random.sample(range(1,46),7)
+    lottonumber=lotto[:6]
+    bonus=lotto[6]
+    lotto_simulation(lottonumber)
+realtotal0=(len(total0)/b*100);realtotal1=(len(total1)/b*100);realtotal2=(len(total2)/b*100);realtotal3=(len(total3)/b*100);realtotal4=(len(total4)/b*100);realtotal5=(len(total5)/b*100)
+print("역대 가장 많이 나온 상위 7개 로또 번호",mydict3,)
+print(" 꽝:",realtotal0,"%")
+print("5등:",realtotal1,"%")
+print("4등:",realtotal2,"%")
+print("3등:",realtotal3,"%")
+print("2등:",realtotal4,"%")
+print("1등:",realtotal5,"%")
+if realtotal0>realtotal1+20:
+    print(realtotal0-realtotal1,"퍼센트나 꽝과 5등이 차이나는 군요 그러므로 로또는 산술적으로 계산하기 힘듭니다")
+else:
+    print(realtotal0-realtotal1, "연구해 볼 만 하겠습니다!!")
